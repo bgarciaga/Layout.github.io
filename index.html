@@ -1024,20 +1024,17 @@ function __initLayoutHeader(){
   });
 
   // ---- exit: return to the Portal de Operaciones and close this tab ----
+  // Only ever act on THIS tab (never touch window.opener) so we can never end up
+  // navigating some other already-open tab and leaving this one open too, which
+  // is what produced duplicate "Portal" tabs.
   var PORTAL_URL = 'https://bgarciaga.github.io/Portal-de-Operaciones-github.io/index.html#/inicio';
   document.getElementById('exitBtn').addEventListener('click', function(){
     var overlay = document.getElementById('exitOverlay');
     overlay.style.display = 'flex';
     setTimeout(function(){
-      try {
-        if (window.opener && !window.opener.closed){
-          window.opener.location.href = PORTAL_URL;
-          try { window.opener.focus(); } catch(e2){}
-          window.close();
-          return;
-        }
-      } catch(e){}
       try { window.location.href = PORTAL_URL; } catch(e){}
+      // Best-effort: only succeeds if this tab was opened via script; otherwise
+      // browsers block it and the tab simply stays open showing the portal.
       setTimeout(function(){ try { window.close(); } catch(e){} }, 400);
     }, 150);
   });
